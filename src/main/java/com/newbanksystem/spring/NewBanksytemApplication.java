@@ -8,27 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NewBanksytemApplication implements CommandLineRunner {
+public class NewBanksytemApplication {
 
 	@Autowired
 	private AddressRepository addressRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(NewBanksytemApplication.class, args);
-	}
-
-	public void run(String... args) throws Exception {
-		Address address = Address.builder()
-				.address("Rua Abura")
-				.cep("02542110")
-				.city("São Paulo")
-				.district("Imirim")
-				.secondAddress("Casa 3")
-				.number("641a")
-				.state("SP")
-				.build();
-
-		Address addressSaved = addressRepository.save(address);
-		System.out.println(addressSaved);
 	}
 }
