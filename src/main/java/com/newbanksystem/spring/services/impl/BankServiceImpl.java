@@ -1,5 +1,6 @@
 package com.newbanksystem.spring.services.impl;
 
+import com.newbanksystem.spring.client.ViaCepClient;
 import com.newbanksystem.spring.models.Account;
 import com.newbanksystem.spring.models.Address;
 import com.newbanksystem.spring.models.Client;
@@ -7,6 +8,7 @@ import com.newbanksystem.spring.repositories.AccountRepository;
 import com.newbanksystem.spring.repositories.AddressRepository;
 import com.newbanksystem.spring.repositories.ClientRepository;
 import com.newbanksystem.spring.request.AccountRequest;
+import com.newbanksystem.spring.response.AddressResponse;
 import com.newbanksystem.spring.services.BankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import static com.newbanksystem.spring.utils.RandomNumberUtil.generateRandomNumb
 @RequiredArgsConstructor
 public class BankServiceImpl implements BankService { /* Onde será implementado a Lógica de negócio */
 
+    private final ViaCepClient viacepClient;
     private final ClientRepository clientRepository;
     private final AddressRepository addressRepository;
     private final AccountRepository accountRepository;
@@ -31,14 +34,16 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
     public Account createAccount(AccountRequest request) { /* Onde será construido a implementação */
         log.info("BankServiceImpl.createAccount init - request={}", request);
 
+        AddressResponse addressResponse = viacepClient.getAddressByCep(request.getCep());
+
         Address address = Address
                 .builder()
                 .cep(request.getCep())
-                .address("Rua Aburá")
-                .city("São Paulo")
-                .state("SP")
+                .address(addressResponse.getLogradouro())
+                .city(addressResponse.getLocalidade())
+                .state(addressResponse.getUf())
                 .number(request.getNumber())
-                .district(request.getDistrict())
+                .district(addressResponse.getBairro())
                 .secondAddress(request.getSecondAddress())
                 .build();
         Address savedAddress = addressRepository.save(address);
@@ -56,16 +61,25 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
 
         Account account = Account
                 .builder()
-                .number(generateRandomNumber())
+                .number(generateAccountNumber())
                 .client(savedClient)
                 .balance(BigDecimal.valueOf(0))
                 .registration(LocalDateTime.now())
-                .password(123123)
+                .password(Integer.valueOf(request.getPassword()))
                 .build();
         Account savedAccount = accountRepository.save(account);
 
         log.info("BankServiceImpl.createAccount end - account={}", account);
 
         return account;
+    }
+
+    private Integer generateAccountNumber() {
+
+        Integer number = generateRandomNumber();
+        while (accountRepository.findFirstByNumber(number).isPresent()) {
+            number = generateRandomNumber();
+        }
+        return number;
     }
 }

@@ -1,5 +1,8 @@
 package com.newbanksystem.spring.utils;
 
+import com.newbanksystem.spring.repositories.AccountRepository;
+import lombok.AllArgsConstructor;
+
 import java.util.Random;
 
 public class RandomNumberUtil {
