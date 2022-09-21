@@ -23,9 +23,10 @@ public class BankController {
 
     @ResponseStatus(HttpStatus.CREATED)     // Informa qual Status HTTP será informado no Front ou Postman
     @PostMapping("/api/create-account")     // URI de acesso
-    public Account createAccount(@RequestBody AccountRequest request) {  // Aonde recebemos os dados Externos
+    public Account createAccount(@RequestBody AccountRequest request) {  /* Aonde recebemos os dados Externos,
+                                                                            Corpo do request*/
 
-        log.info("BankController.createAccount init"); // "Novo sout", para ver nos log que a conta foi criada
+        log.info("BankController.createAccount init"); // "Novo sout", para ver nos logs que a conta foi criada
 
         Account account = bankService.createAccount(request); // Recebe o Objeto JSON
 

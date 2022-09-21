@@ -7,11 +7,12 @@ import java.io.Serializable;
 @Data
 public class AccountRequest implements Serializable {
 
-    /*  Request (Solicitar)
+        /*
+        Request (Solicitar)
         DTO - Data Transfer Object
         Classe que recebe os dados externos (front (ou postman, caso seja um teste))
         Mapeamento de Objeto JSON
-         */
+        */
 
     private String name;
     private String document;
@@ -20,6 +21,7 @@ public class AccountRequest implements Serializable {
     private String email;
     private String cep;
     private String number;
+    private String district;
     private String secondAddress;
     private String password;
 }

@@ -7,4 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository // Annotation para identificar a classe como Repository (Não Obrigatório, Apenas Identificação)
 
 public interface AddressRepository extends JpaRepository<Address, Integer> {
-} // A Classe JpaRepository transforma a Interface em um Bean do Spring
+}
+// A Classe JpaRepository transforma a Interface em um Bean do Spring
+
+/* As Classes de Repositories são classes que lidam com o Banco de Dados
+*  São nossos contratos  */

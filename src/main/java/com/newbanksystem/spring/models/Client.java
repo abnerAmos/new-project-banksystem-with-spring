@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /* Annotations Lombok */
 @Getter
@@ -28,8 +29,8 @@ public class Client implements Serializable {
     private Address address;
 
     private String name;
-    private String birthday;
-    private Integer phone;
+    private LocalDate birthdate;
+    private Long phone;
     private String email;
     private String document;
 

@@ -26,8 +26,8 @@ CREATE TABLE account(
 id				INT				NOT NULL	AUTO_INCREMENT		,
 number	        INT 	(10)	NOT NULL						,
 client_id		INT				NOT NULL						,
-balance			DECIMAL (13, 2)				DEFAULT 0			,
-password        INT     (6)     NOT NULL
+balance			DECIMAL (13, 2)	NOT NULL	DEFAULT 0			,
+password        INT     (6)     NOT NULL                        ,
 registration_dt	DATETIME		NOT NULL						,
 deactivation_dt	DATETIME										,
 PRIMARY KEY	(id)												,
