@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     Optional<Account> findFirstByNumber(Integer number);
+
+    Optional<Account> findFirstByClientDocumentOrClientEmail(String document, String email);
 }

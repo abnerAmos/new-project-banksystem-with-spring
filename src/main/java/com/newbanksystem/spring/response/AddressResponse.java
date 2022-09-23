@@ -15,5 +15,6 @@ public class AddressResponse implements Serializable {
     private String uf;
     private String bairro;
     private String logradouro;
+    private boolean erro;
 
 }

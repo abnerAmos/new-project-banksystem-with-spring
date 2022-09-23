@@ -1,4 +1,4 @@
-package com.newbanksystem.spring.api;
+package com.newbanksystem.spring.api.controller;
 
 import com.newbanksystem.spring.models.Account;
 import com.newbanksystem.spring.request.AccountRequest;
@@ -6,10 +6,13 @@ import com.newbanksystem.spring.services.BankService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -23,7 +26,7 @@ public class BankController {
 
     @ResponseStatus(HttpStatus.CREATED)     // Informa qual Status HTTP será informado no Front ou Postman
     @PostMapping("/api/create-account")     // URI de acesso
-    public Account createAccount(@RequestBody AccountRequest request) {  /* Aonde recebemos os dados Externos,
+    public ResponseEntity<Account> createAccount(@RequestBody AccountRequest request) {  /* Aonde recebemos os dados Externos,
                                                                             Corpo do request*/
 
         log.info("BankController.createAccount init"); // "Novo sout", para ver nos logs que a conta foi criada
@@ -32,7 +35,7 @@ public class BankController {
 
         log.info("BankController.createAccount end");
 
-        return account;
+        return ResponseEntity.ok(account);
     }
 
 }
