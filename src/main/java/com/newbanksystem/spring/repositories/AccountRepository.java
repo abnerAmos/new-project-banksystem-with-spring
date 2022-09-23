@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
-    Optional<Account> findFirstByNumber(Integer number);
+    Optional<Account> findFirstByNumber(Integer accountNumber);
 
     Optional<Account> findFirstByClientDocumentOrClientEmail(String document, String email);
 }

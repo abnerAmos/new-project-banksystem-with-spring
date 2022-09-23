@@ -3,7 +3,7 @@ package com.newbanksystem.spring.services.impl;
 import com.newbanksystem.spring.client.ViaCepClient;
 import com.newbanksystem.spring.exceptions.AccountAlreadyExistException;
 import com.newbanksystem.spring.exceptions.AddressNotFoundException;
-import com.newbanksystem.spring.exceptions.DocumentInvalidException;
+import com.newbanksystem.spring.exceptions.AccountValidationException;
 import com.newbanksystem.spring.models.Account;
 import com.newbanksystem.spring.models.Address;
 import com.newbanksystem.spring.models.Client;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.newbanksystem.spring.utils.DateUtil.stringToLocalDate;
@@ -86,6 +87,22 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
         log.info("BankServiceImpl.createAccount end - account={}", account);
 
         return account;
+    }
+
+    @Override
+    public void deposit(Integer accountNumber, BigDecimal value) {
+
+        Account account = accountRepository             // Buscando conta existente no DB
+                .findFirstByNumber(accountNumber)
+                .orElseThrow(() -> new AccountValidationException("Conta não localizada"));
+
+        if (Objects.nonNull(account.getDeactivation())) // Verificando se a conta esta ativa
+            throw new AccountValidationException("Conta informada desativada");
+
+        BigDecimal total = account.getBalance().add(value);
+        account.setBalance(total);
+
+        accountRepository.save(account);
     }
 
     private Integer generateAccountNumber() {

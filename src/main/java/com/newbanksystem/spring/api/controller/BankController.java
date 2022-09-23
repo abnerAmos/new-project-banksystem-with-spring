@@ -7,11 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Slf4j
@@ -36,6 +34,19 @@ public class BankController {
         log.info("BankController.createAccount end");
 
         return ResponseEntity.ok(account);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("api/deposit/{accountNumber}")
+    public String deposit(@RequestParam("value")BigDecimal value, @PathVariable("accountNumber") Integer number) {
+
+        log.info("BankController.createAccount init");
+
+        bankService.deposit(number, value);
+
+        log.info("BankController.createAccount end");
+
+        return "Deposito efetuado com sucesso";
     }
 
 }
