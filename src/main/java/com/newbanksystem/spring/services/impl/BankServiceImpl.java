@@ -105,6 +105,25 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
         accountRepository.save(account);
     }
 
+    @Override
+    public void withdraw(Integer accountNumber, BigDecimal value) {
+
+        Account account = accountRepository             // Buscando conta existente no DB
+                .findFirstByNumber(accountNumber)
+                .orElseThrow(() -> new AccountValidationException("Conta não localizada"));
+
+        if (Objects.nonNull(account.getDeactivation())) // Verificando se a conta esta ativa
+            throw new AccountValidationException("Conta informada desativada");
+
+        if (account.getBalance().compareTo(value) < 0)
+            throw new AccountValidationException("Saldo insuficiente");
+
+        BigDecimal newValue = account.getBalance().subtract(value);
+        account.setBalance(newValue);
+
+        accountRepository.save(account);
+    }
+
     private Integer generateAccountNumber() {
 
         Integer number = generateRandomNumber();

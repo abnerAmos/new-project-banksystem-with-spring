@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionHandlerApp {
 
+    // Classe que faz o controle/manipula nossas Exceptions criadas
+
     @ExceptionHandler(AddressNotFoundException.class)
     public ResponseEntity<String> addressNotFoundException(AddressNotFoundException e) {
         return ResponseEntity.badRequest().body(e.getMessage());

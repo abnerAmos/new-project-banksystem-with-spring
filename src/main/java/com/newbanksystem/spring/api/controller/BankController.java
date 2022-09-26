@@ -40,13 +40,25 @@ public class BankController {
     @PatchMapping("api/deposit/{accountNumber}")
     public String deposit(@RequestParam("value")BigDecimal value, @PathVariable("accountNumber") Integer number) {
 
-        log.info("BankController.createAccount init");
+        log.info("BankController.deposit init");
 
         bankService.deposit(number, value);
 
-        log.info("BankController.createAccount end");
+        log.info("BankController.deposit end");
 
         return "Deposito efetuado com sucesso";
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("api/withdraw/{accountNumber}")
+    public String withdraw(@RequestParam("value")BigDecimal value, @PathVariable("accountNumber") Integer number) {
+
+        log.info("BankController.withdraw init");
+
+        bankService.withdraw(number, value);
+
+        log.info("BankController.withdraw end");
+
+        return "Saque efetuado com sucesso";
+    }
 }

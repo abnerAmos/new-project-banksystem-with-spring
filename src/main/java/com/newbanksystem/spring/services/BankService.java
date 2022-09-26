@@ -11,4 +11,6 @@ public interface BankService { // Package "Service" São as regras de negócio.
 
     void deposit(Integer accountNumber, BigDecimal value);
 
+    void withdraw(Integer accountNumber, BigDecimal value);
+
 }

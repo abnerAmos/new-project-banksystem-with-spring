@@ -7,5 +7,6 @@ import org.springframework.context.annotation.Configuration;
 @EnableFeignClients({"com.newbanksystem.spring.client"})
 public class AppConfig {
 
+    // Faz a integração do projeto com o sistema externo utilizando o padrão REST
 
 }
