@@ -1,5 +1,6 @@
 package com.newbanksystem.spring.api.controller;
 
+import com.newbanksystem.spring.cache.model.WithdrawLimit;
 import com.newbanksystem.spring.models.Account;
 import com.newbanksystem.spring.request.AccountRequest;
 import com.newbanksystem.spring.services.BankService;
@@ -57,8 +58,11 @@ public class BankController {
 
         bankService.withdraw(number, value);
 
+        var withdraw = new WithdrawLimit().accountNumber(number).addWithdraws(value);
+
         log.info("BankController.withdraw end");
 
         return "Saque efetuado com sucesso";
     }
+
 }

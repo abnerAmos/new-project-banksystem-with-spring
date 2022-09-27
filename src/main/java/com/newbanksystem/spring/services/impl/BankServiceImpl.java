@@ -1,5 +1,7 @@
 package com.newbanksystem.spring.services.impl;
 
+import com.newbanksystem.spring.cache.model.WithdrawLimit;
+import com.newbanksystem.spring.cache.repository.WithdrawLimitRepository;
 import com.newbanksystem.spring.client.ViaCepClient;
 import com.newbanksystem.spring.exceptions.AccountAlreadyExistException;
 import com.newbanksystem.spring.exceptions.AddressNotFoundException;
@@ -16,6 +18,7 @@ import com.newbanksystem.spring.services.BankService;
 import com.newbanksystem.spring.utils.InvalidDocumentUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,10 +34,14 @@ import static com.newbanksystem.spring.utils.RandomNumberUtil.generateRandomNumb
 @RequiredArgsConstructor
 public class BankServiceImpl implements BankService { /* Onde será implementado a Lógica de negócio */
 
+    @Value("${app.withdraw.daily-limit}")
+    private String withdrawDailyLimit;
+
     private final ViaCepClient viacepClient;
     private final ClientRepository clientRepository;
     private final AddressRepository addressRepository;
     private final AccountRepository accountRepository;
+    private final WithdrawLimitRepository withdrawLimitRepository;
 
     @Override
     public Account createAccount(AccountRequest request) { /* Onde será construido a implementação */
@@ -108,6 +115,8 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
     @Override
     public void withdraw(Integer accountNumber, BigDecimal value) {
 
+        checkWithdrawDailyLimit(accountNumber, value);  // Verifica a quantidade de valor sacado
+
         Account account = accountRepository             // Buscando conta existente no DB
                 .findFirstByNumber(accountNumber)
                 .orElseThrow(() -> new AccountValidationException("Conta não localizada"));
@@ -115,16 +124,48 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
         if (Objects.nonNull(account.getDeactivation())) // Verificando se a conta esta ativa
             throw new AccountValidationException("Conta informada desativada");
 
-        if (account.getBalance().compareTo(value) < 0)
+        if (account.getBalance().compareTo(value) < 0)  // Compara o saldo da conta com o valor a ser sacado
             throw new AccountValidationException("Saldo insuficiente");
 
-        BigDecimal newValue = account.getBalance().subtract(value);
+        BigDecimal newValue = account.getBalance().subtract(value); // Subtrai o valor da conta
         account.setBalance(newValue);
 
-        accountRepository.save(account);
+        accountRepository.save(account);    // Salva os dados no DB da conta
+
+        addWithdrawToLimitControl(accountNumber, value);    // Salva o Valor de saque no Cache
     }
 
-    private Integer generateAccountNumber() {
+    private void addWithdrawToLimitControl(Integer accountNumber, BigDecimal value) {
+
+        WithdrawLimit limit = withdrawLimitRepository
+                .findById(accountNumber)
+                .orElse(new WithdrawLimit().accountNumber(accountNumber));
+
+        limit.addWithdraws(value);
+
+        withdrawLimitRepository.save(limit);
+    }
+
+    private void checkWithdrawDailyLimit(Integer accountNumber, BigDecimal value) {
+
+        withdrawLimitRepository.findById(accountNumber).ifPresent(withdrawLimit -> {
+
+            // Soma as retiradas
+            BigDecimal totalPartial = withdrawLimit.getWithdraws()
+                    .stream()
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Soma o valor a ser sacado, com o total que ja foi sacado
+            BigDecimal total = totalPartial.add(value);
+
+            BigDecimal dailyLimit = new BigDecimal(this.withdrawDailyLimit);
+            if (total.compareTo(dailyLimit) > 0) {
+                throw new AccountValidationException("Limite de saque excedido");
+            }
+        });
+    }
+
+    private Integer generateAccountNumber() {   // Gera um numero Randomico
 
         Integer number = generateRandomNumber();
         while (accountRepository.findFirstByNumber(number).isPresent()) {
@@ -133,7 +174,7 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
         return number;
     }
 
-    private Optional<AddressResponse> getAddress(AccountRequest request) {
+    private Optional<AddressResponse> getAddress(AccountRequest request) { // Busca o CEP via API na ViaCep
         try {
             AddressResponse addressResponse = viacepClient.getAddressByCep(request.getCep());
 

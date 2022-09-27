@@ -9,8 +9,10 @@ public interface BankService { // Package "Service" São as regras de negócio.
 
     Account createAccount(AccountRequest accountRequest); // Recebe os dados do Front para criar a "Conta"
 
-    void deposit(Integer accountNumber, BigDecimal value);
+    void deposit(Integer accountNumber, BigDecimal value);  // Recebe os dados para depósito
 
-    void withdraw(Integer accountNumber, BigDecimal value);
+    void withdraw(Integer accountNumber, BigDecimal value); // Recebe os dados para saque
+
+
 
 }
