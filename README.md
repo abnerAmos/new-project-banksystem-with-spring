@@ -9,6 +9,7 @@ Novo Projeto Sistema de Banco com Spring
 - OpenFeign (REST Consumer)
 - Flyway
 - Lombok
+- Redis (Cache)
 
 # Ferramentas Sincronizadas
 - Postman (Para chamadas REST)
