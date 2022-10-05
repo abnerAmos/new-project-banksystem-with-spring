@@ -13,6 +13,7 @@ import com.newbanksystem.spring.repositories.AccountRepository;
 import com.newbanksystem.spring.repositories.AddressRepository;
 import com.newbanksystem.spring.repositories.ClientRepository;
 import com.newbanksystem.spring.request.AccountRequest;
+import com.newbanksystem.spring.request.TransferRequest;
 import com.newbanksystem.spring.response.AddressResponse;
 import com.newbanksystem.spring.services.BankService;
 import com.newbanksystem.spring.utils.InvalidDocumentUtil;
@@ -133,6 +134,52 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
         accountRepository.save(account);    // Salva os dados no DB da conta
 
         addWithdrawToLimitControl(accountNumber, value);    // Salva o Valor de saque no Cache
+    }
+
+    @Override
+    public void transfer(TransferRequest transferRequest) {
+
+        checkWithdrawDailyLimit(transferRequest.getFromAccount(), transferRequest.getAmmount());
+
+        // Verificando conta de Origem
+
+        Account from = accountRepository
+                .findFirstByNumber(transferRequest.getFromAccount())
+                .orElseThrow(() -> new AccountValidationException("Conta não localizada"));
+
+        if (Objects.nonNull(from.getDeactivation()))
+            throw new AccountValidationException("Conta informada desativada");
+
+        // Verificando conta de Destino
+
+        Account to = accountRepository
+                .findFirstByNumber(transferRequest.getToAccount())
+                .orElseThrow(() -> new AccountValidationException("Conta não localizada"));
+
+        if (Objects.nonNull(to.getDeactivation()))
+            throw new AccountValidationException("Conta informada desativada");
+
+        // Verificando se há saldo na conta Origem
+
+        if (from.getBalance().compareTo(transferRequest.getAmmount()) < 0)
+            throw new AccountValidationException("Saldo insuficiente para operação");
+
+        // Subtraindo valor da conta de Origem
+
+        BigDecimal newValue = from.getBalance().subtract(transferRequest.getAmmount());
+        from.setBalance(newValue);
+
+        // Inserindo o valor na conta Destino
+
+        BigDecimal newBalance = to.getBalance().add(transferRequest.getAmmount());
+        to.setBalance(newBalance);
+
+        accountRepository.save(from);
+        accountRepository.save(to);
+
+        // Salva o Valor de saque no Cache
+        
+        addWithdrawToLimitControl(transferRequest.getFromAccount(), transferRequest.getAmmount());
     }
 
     private void addWithdrawToLimitControl(Integer accountNumber, BigDecimal value) {

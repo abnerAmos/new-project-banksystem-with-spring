@@ -15,7 +15,7 @@ public class RegisPurgeScheduler {
 
     // Todos Scheduler são VOID e Sem Parâmetros
 
-    @Scheduled(cron = "0 0 0 * * ?")    // Reseta todos os dias as 00:00
+    @Scheduled(cron = "0 * * ? * *")    // Reseta a cada minuto
     public void purgeWithdrawDailyLimit() {
 
         log.info("RegisPurgeScheduler.purgeWithdrawDailyLimit - Init");

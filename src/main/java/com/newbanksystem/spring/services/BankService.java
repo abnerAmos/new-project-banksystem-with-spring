@@ -2,6 +2,7 @@ package com.newbanksystem.spring.services;
 
 import com.newbanksystem.spring.models.Account;
 import com.newbanksystem.spring.request.AccountRequest;
+import com.newbanksystem.spring.request.TransferRequest;
 
 import java.math.BigDecimal;
 
@@ -13,6 +14,5 @@ public interface BankService { // Package "Service" São as regras de negócio.
 
     void withdraw(Integer accountNumber, BigDecimal value); // Recebe os dados para saque
 
-
-
+    void transfer(TransferRequest transferRequest);
 }

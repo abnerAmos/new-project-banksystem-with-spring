@@ -3,6 +3,7 @@ package com.newbanksystem.spring.api.controller;
 import com.newbanksystem.spring.cache.model.WithdrawLimit;
 import com.newbanksystem.spring.models.Account;
 import com.newbanksystem.spring.request.AccountRequest;
+import com.newbanksystem.spring.request.TransferRequest;
 import com.newbanksystem.spring.services.BankService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -52,7 +52,8 @@ public class BankController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("api/withdraw/{accountNumber}")
-    public String withdraw(@RequestParam("value")BigDecimal value, @PathVariable("accountNumber") Integer number) {
+    public String withdraw(@RequestParam("value")BigDecimal value,
+                           @PathVariable("accountNumber") Integer number) {
 
         log.info("BankController.withdraw init");
 
@@ -65,4 +66,22 @@ public class BankController {
         return "Saque efetuado com sucesso";
     }
 
+//    @PatchMapping("api/transfer/{account}")
+//    public String transfer(@PathVariable String account,
+//                           @RequestParam("to-account-number") String toAccount) {
+//        return null;
+//    }
+
+    @PatchMapping("api/transfer")
+    public String transfer(@RequestHeader("token") String token,
+                           @RequestBody TransferRequest transferRequest) {
+
+        log.info("BankController.transfer - init");
+
+        bankService.transfer(transferRequest);
+
+        log.info("BankController.transfer - end");
+
+        return "Transferência realizada com sucesso";
+    }
 }
