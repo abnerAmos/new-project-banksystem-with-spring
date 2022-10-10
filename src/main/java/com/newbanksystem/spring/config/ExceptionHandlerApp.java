@@ -3,6 +3,8 @@ package com.newbanksystem.spring.config;
 import com.newbanksystem.spring.exceptions.AccountAlreadyExistException;
 import com.newbanksystem.spring.exceptions.AddressNotFoundException;
 import com.newbanksystem.spring.exceptions.AccountValidationException;
+import com.newbanksystem.spring.exceptions.TokenValidationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,9 +22,16 @@ public class ExceptionHandlerApp {
     @ExceptionHandler(AccountAlreadyExistException.class)
     public ResponseEntity<String> accountAlreadyExistException(AccountAlreadyExistException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
 
-    }@ExceptionHandler(AccountValidationException.class)
+    @ExceptionHandler(AccountValidationException.class)
     public ResponseEntity<String> documentInvalidException(AccountValidationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(TokenValidationException.class)
+    public ResponseEntity<String> tokenValidationException(TokenValidationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
 }

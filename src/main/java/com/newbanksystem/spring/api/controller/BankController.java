@@ -52,12 +52,13 @@ public class BankController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("api/withdraw/{accountNumber}")
-    public String withdraw(@RequestParam("value")BigDecimal value,
+    public String withdraw(@RequestHeader("token") String token,
+                           @RequestParam("value")BigDecimal value,
                            @PathVariable("accountNumber") Integer number) {
 
         log.info("BankController.withdraw init");
 
-        bankService.withdraw(number, value);
+        bankService.withdraw(number, value, token);
 
         var withdraw = new WithdrawLimit().accountNumber(number).addWithdraws(value);
 
@@ -66,19 +67,13 @@ public class BankController {
         return "Saque efetuado com sucesso";
     }
 
-//    @PatchMapping("api/transfer/{account}")
-//    public String transfer(@PathVariable String account,
-//                           @RequestParam("to-account-number") String toAccount) {
-//        return null;
-//    }
-
     @PatchMapping("api/transfer")
     public String transfer(@RequestHeader("token") String token,
                            @RequestBody TransferRequest transferRequest) {
 
         log.info("BankController.transfer - init");
 
-        bankService.transfer(transferRequest);
+        bankService.transfer(transferRequest, token);
 
         log.info("BankController.transfer - end");
 

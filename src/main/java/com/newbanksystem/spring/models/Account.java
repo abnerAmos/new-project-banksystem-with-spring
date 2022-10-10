@@ -35,6 +35,6 @@ public class Account implements Serializable {
     private LocalDateTime deactivation;
 
     @Column(nullable = false, precision = 6) // É possivel fazer a identicação da coluna, dando uma seguranca a mais
-    private Integer password;
+    private String password;
 
 }

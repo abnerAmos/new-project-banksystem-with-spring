@@ -16,6 +16,7 @@ import com.newbanksystem.spring.request.AccountRequest;
 import com.newbanksystem.spring.request.TransferRequest;
 import com.newbanksystem.spring.response.AddressResponse;
 import com.newbanksystem.spring.services.BankService;
+import com.newbanksystem.spring.services.TokenService;
 import com.newbanksystem.spring.utils.InvalidDocumentUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
     private final AddressRepository addressRepository;
     private final AccountRepository accountRepository;
     private final WithdrawLimitRepository withdrawLimitRepository;
+    private final TokenService tokenService;
 
     @Override
     public Account createAccount(AccountRequest request) { /* Onde será construido a implementação */
@@ -88,7 +90,7 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
                 .client(savedClient)
                 .balance(BigDecimal.valueOf(0))
                 .registration(LocalDateTime.now())
-                .password(Integer.valueOf(request.getPassword()))
+                .password(request.getPassword())
                 .build();
         Account savedAccount = accountRepository.save(account);
 
@@ -114,7 +116,9 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
     }
 
     @Override
-    public void withdraw(Integer accountNumber, BigDecimal value) {
+    public void withdraw(Integer accountNumber, BigDecimal value, String token) {
+
+        tokenService.validateToken(token, accountNumber);
 
         checkWithdrawDailyLimit(accountNumber, value);  // Verifica a quantidade de valor sacado
 
@@ -137,7 +141,7 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
     }
 
     @Override
-    public void transfer(TransferRequest transferRequest) {
+    public void transfer(TransferRequest transferRequest, String token) {
 
         checkWithdrawDailyLimit(transferRequest.getFromAccount(), transferRequest.getAmmount());
 
@@ -178,7 +182,7 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
         accountRepository.save(to);
 
         // Salva o Valor de saque no Cache
-        
+
         addWithdrawToLimitControl(transferRequest.getFromAccount(), transferRequest.getAmmount());
     }
 

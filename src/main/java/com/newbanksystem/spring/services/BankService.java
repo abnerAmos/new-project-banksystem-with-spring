@@ -12,7 +12,7 @@ public interface BankService { // Package "Service" São as regras de negócio.
 
     void deposit(Integer accountNumber, BigDecimal value);  // Recebe os dados para depósito
 
-    void withdraw(Integer accountNumber, BigDecimal value); // Recebe os dados para saque
+    void withdraw(Integer accountNumber, BigDecimal value, String token); // Recebe os dados para saque
 
-    void transfer(TransferRequest transferRequest);
+    void transfer(TransferRequest transferRequest, String token);
 }
