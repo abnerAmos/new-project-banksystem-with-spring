@@ -1,5 +1,6 @@
 # new-project-banksystem-with-spring
 Novo Projeto Sistema de Banco com Spring
+STATUS: Em Construção
 
 # Frameworks do Projeto
 - SpringBoot
