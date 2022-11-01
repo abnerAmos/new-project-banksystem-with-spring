@@ -1,9 +1,7 @@
 package com.newbanksystem.spring;
 
-import com.newbanksystem.spring.models.Address;
 import com.newbanksystem.spring.repositories.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

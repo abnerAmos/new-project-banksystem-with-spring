@@ -5,8 +5,9 @@ import com.newbanksystem.spring.models.Account;
 import com.newbanksystem.spring.request.AccountRequest;
 import com.newbanksystem.spring.request.TransferRequest;
 import com.newbanksystem.spring.services.BankService;
+import com.newbanksystem.spring.services.BorrowService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +16,16 @@ import java.math.BigDecimal;
 
 @Slf4j
 @RestController
+@SuppressWarnings("unused")
+@RequiredArgsConstructor    /* Ao utilizar esta Annotations, e adicionarmos "final" nas variáveis de classe
+                                podemos substituir a Annotation @Autowired das variáveis */
 public class BankController {
 
     /* seria o "main" onde é a porta para cada funcionalidade do projeto;
                                     Aqui é o nosso "End-Point" */
 
-    @Autowired
-    private BankService bankService;
+    private final BankService bankService;
+    private final BorrowService borrowService;
 
     @ResponseStatus(HttpStatus.CREATED)     // Informa qual Status HTTP será informado no Front ou Postman
     @PostMapping("/api/create-account")     // URI de acesso
@@ -78,5 +82,18 @@ public class BankController {
         log.info("BankController.transfer - end");
 
         return "Transferência realizada com sucesso";
+    }
+    @PostMapping("api/borrow/{accountNumber}")
+    public String borrow(@PathVariable Integer accountNumber,
+                         @RequestParam("amount") BigDecimal amount,
+                         @RequestHeader("token") String token) {
+
+        log.info("BankController.borrow init");
+
+        BigDecimal value = borrowService.requestBorrow(accountNumber, token, amount);
+
+        log.info("BankController.borrow end");
+
+        return "Empréstimo concedido - Confira sua conta";
     }
 }

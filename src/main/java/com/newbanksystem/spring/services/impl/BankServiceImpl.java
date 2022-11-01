@@ -143,6 +143,8 @@ public class BankServiceImpl implements BankService { /* Onde será implementado
     @Override
     public void transfer(TransferRequest transferRequest, String token) {
 
+        tokenService.validateToken(token, transferRequest.getFromAccount());
+
         checkWithdrawDailyLimit(transferRequest.getFromAccount(), transferRequest.getAmmount());
 
         // Verificando conta de Origem
